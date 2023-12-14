@@ -1,0 +1,6 @@
+catalog:
+  locations:
+    - type: url
+      target: https://github.com/yangcao77/tssc-sample-templates/blob/user-entity/all.yaml
+      rules:
+        - allow: [Template]
