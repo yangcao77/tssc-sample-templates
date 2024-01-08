@@ -1,3 +1,4 @@
+#!/bin/bash
 ROOTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )" 
 
 # generate templates from samples
@@ -25,11 +26,10 @@ rm -rf $TEMPDIR
 # replace {{value}} to ${{ value }} for GPT
 function iterate() {
   local dir="$1"
-
   for file in "$dir"/*; do
     if [ -f "$file" ]  &&  [[ "$file" != *"catalog-info.yaml"* ]]; then
-      sed -i "" "s/{{/\${{ /g" $file
-      sed -i "" "s/}}/ }}/g" $file
+      sed -i "s/{{/\${{ /g" $file
+      sed -i "s/}}/ }}/g" $file
     fi
 
     if [ -d "$file" ]; then
