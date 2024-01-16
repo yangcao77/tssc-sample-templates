@@ -14,17 +14,17 @@ cd $TEMPDIR
 git clone $REPO 2>&1 > /dev/null
 
 
-DEST=$ROOTDIR/skeleton/gitops-template
+DEST=$ROOTDIR/skeleton/gitops-template/applications/app1
 rm -rf $DEST/components
-rm -rf $DEST/application.yaml
+#rm -rf $DEST/application.yaml
 mkdir -p $DEST/components
 cp -r $TEMPDIR/$REPONAME/templates/http $DEST/components/http     # only support http now
-cp -r $TEMPDIR/$REPONAME/templates/application.yaml $DEST/
+#cp -r $TEMPDIR/$REPONAME/templates/application.yaml $DEST/
 rm -rf $TEMPDIR
 
 # replace {{value}} to ${{ value }} for GPT
-sed -i "s/{{/\${{ /g" $DEST/application.yaml
-sed -i "s/}}/ }}/g" $DEST/application.yaml
+# sed -i "s/{{/\${{ /g" $DEST/application.yaml
+# sed -i "s/}}/ }}/g" $DEST/application.yaml
 
 function iterate() {
   local dir="$1"
@@ -44,5 +44,5 @@ function iterate() {
 iterate $DEST/components
 
 
-cp -r  $DEST/.tekton/*-repository.yaml $DEST/components/http/overlays/development    # temporary workaround for gitops
+cp -r  $ROOTDIR/skeleton/gitops-template/.tekton/*-repository.yaml $DEST/components/http/overlays/development    # temporary workaround for gitops
 

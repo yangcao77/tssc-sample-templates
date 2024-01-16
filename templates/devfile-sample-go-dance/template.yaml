@@ -157,7 +157,7 @@ spec:
           # example: github.com?owner=<owner>&repo=<srcRepo>, the gitops repo name will be <srcRepo>-gitops
           repoURL: https://${{ (parameters.repoUrl | parseRepoUrl).host }}/${{ (parameters.repoUrl | parseRepoUrl).owner }}/${{ (parameters.repoUrl | parseRepoUrl).repo }}-gitops
           srcRepoURL: https://${{ (parameters.repoUrl | parseRepoUrl).host }}/${{ (parameters.repoUrl | parseRepoUrl).owner }}/${{ (parameters.repoUrl | parseRepoUrl).repo }}
-          argoComponent: './components/${{ parameters.name }}/overlays/development'
+          #argoComponent: './components/${{ parameters.name }}/overlays/development'
           owner: ${{ parameters.owner }} 
           image: '${{ parameters.imageRegistry }}/${{ parameters.imageOrg }}/${{ parameters.imageName }}'
           port: 8081
@@ -166,8 +166,11 @@ spec:
       name: Rename Component Directory
       input:
         files:
-          - from: gitops/components/http
-            to: gitops/components/${{ parameters.name }}
+          - from: gitops/applications/app1/components/http
+            to: gitops/applications/app1/components/${{ parameters.name }}
+            overwrite: true
+          - from: gitops/applications/app1
+            to: gitops/applications/${{ parameters.name }}-gitops
             overwrite: true
     - id: publish-github-gitops
       name: Publish GitOps Repository to Github
