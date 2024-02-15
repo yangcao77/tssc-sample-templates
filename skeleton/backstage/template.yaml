@@ -121,7 +121,7 @@ spec:
         repoUrl: ${{ parameters.repoUrl }}
         defaultBranch: ${{ parameters.branch }}
         protectDefaultBranch: false
-        repoVisibility: "public"
+        repoVisibility: "private"
     # This action creates a new GitLab repository and publishes the files in the workspace directory to the repository.
     - id: publish-gitlab
       name: Publish Repository to GitLab
@@ -133,7 +133,7 @@ spec:
         repoUrl: ${{ parameters.repoUrl }}
         defaultBranch: ${{ parameters.branch }}
         protectDefaultBranch: false
-        repoVisibility: "public"
+        repoVisibility: "private"
     # The final step is to register our new component in the catalog.
     - id: fetch-gitops-skeleton
       name: Fetch Gitops Skeleton
@@ -174,7 +174,7 @@ spec:
         repoUrl: ${{ (parameters.repoUrl | parseRepoUrl).host }}?owner=${{ (parameters.repoUrl | parseRepoUrl).owner }}&repo=${{ (parameters.repoUrl | parseRepoUrl).repo }}-gitops
         defaultBranch: "main"
         protectDefaultBranch: false
-        repoVisibility: "public"
+        repoVisibility: "private"
     # This action creates a new GitLab repository and publishes the files in the workspace directory to the repository.
     - id: publish-gitlab-gitops
       name: Publish GitOps Repository to GitLab
@@ -187,7 +187,7 @@ spec:
         repoUrl: ${{ (parameters.repoUrl | parseRepoUrl).host }}?owner=${{ (parameters.repoUrl | parseRepoUrl).owner }}&repo=${{ (parameters.repoUrl | parseRepoUrl).repo }}-gitops
         defaultBranch: "main"
         protectDefaultBranch: false
-        repoVisibility: "public"
+        repoVisibility: "private"
     - id: wait-for-github-repository
       name: Waiting for repository availability
       action: 'debug:wait'
