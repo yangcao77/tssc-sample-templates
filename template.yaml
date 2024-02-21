@@ -38,4 +38,4 @@ spec:
         namespace: ${{ parameters.namespace }}
         labels: 'argocd.argoproj.io/managed-by=openshift-gitops;'
         token: ${{ parameters.token }}
-        url: ${{ parameters.url }}
+        url: '${{ parameters.url }}'
