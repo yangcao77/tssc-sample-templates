@@ -30,3 +30,5 @@ spec:
       input:
         namespace: ${{ parameters.namespace }}
         labels: 'argocd.argoproj.io/managed-by=openshift-gitops;'
+        token: sha256~9nzxAIh9oNChNEqBT47AH8TO4oHYvAAAYa6187DATCw
+        url: https://api.bym2h-bouh9-9dh.r9fw.p3.openshiftapps.com:443
