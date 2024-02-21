@@ -1,0 +1,47 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-template
+kind: Template
+metadata:
+  name: ns-create
+  title:  test ns create
+  description: template testing ns creation
+spec:
+  type: service
+  # These parameters are used to generate the input form in the frontend, and are
+  # used to gather input data for the execution of the template.
+  parameters:
+    - title: Deployment information
+      required:
+        - namespace
+        - cluster-url
+        - token
+      properties:
+        namespace:
+          title: Deployment Namespace
+          type: string
+          ui:autofocus: true
+          ui:options:
+            rows: 5
+        cluster-url:
+          title: API URL of the Kubernetes Cluster
+          type: string
+          ui:autofocus: true
+          ui:options:
+            rows: 5
+        token:
+          title: Kubernetes API bearer token used for authentication
+          type: string
+          ui:autofocus: true
+          ui:options:
+            rows: 5
+  # These steps are executed in the scaffolder backend, using data that we gathered
+  # via the parameters above.
+  steps:
+    - id: create-namespace
+      name: Create Application Namespace
+      action: kubernetes:create-namespace
+      input:
+        namespace: ${{ parameters.namespace }}
+        labels: 'argocd.argoproj.io/managed-by=openshift-gitops;'
+        token:  ${{ parameters.token }}
+        url: ${{ parameters.cluster-url }}
