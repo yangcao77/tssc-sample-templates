@@ -2,8 +2,8 @@ apiVersion: scaffolder.backstage.io/v1beta3
 # https://backstage.io/docs/features/software-catalog/descriptor-format#kind-template
 kind: Template
 metadata:
-  name: go
-  title:  Go Runtime - Trusted Application Pipeline
+  name: go-kube
+  title:  testkube Go Runtime - Trusted Application Pipeline
   description: Go Runtime http based application with advanced continuous integration pipeline covering building, CVE scanning, security scanning, signatures,  attestations, SLSA provenance and SBOM along with Gitops-based continuous deployment 
   tags: ["go", "sscs", "sbom", "acs"]
 spec:
@@ -199,6 +199,13 @@ spec:
       input:
         repoContentsUrl: ${{ steps['publish-github-gitops'].output.repoContentsUrl if steps['publish-github-gitops'].output else steps['publish-gitlab-gitops'].output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
+    - id: create-namespace
+      name: Create Application Namespace
+      action: kubernetes:create-namespace
+      input:
+        namespace: ${{ parameters.namespace }}
+        url: https://kubernetes.default.svc
+        labels: 'argocd.argoproj.io/managed-by: openshift-gitops'
     - id: create-argocd-resources
       name: Create ArgoCD Resources
       action: argocd:create-resources

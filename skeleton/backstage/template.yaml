@@ -199,6 +199,13 @@ spec:
       input:
         repoContentsUrl: ${{ steps['publish-github-gitops'].output.repoContentsUrl if steps['publish-github-gitops'].output else steps['publish-gitlab-gitops'].output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
+    - id: create-namespace
+      name: Create Application Namespace
+      action: kubernetes:create-namespace
+      input:
+        namespace: ${{ parameters.namespace }}
+        url: https://kubernetes.default.svc
+        labels: 'argocd.argoproj.io/managed-by: openshift-gitops'
     - id: create-argocd-resources
       name: Create ArgoCD Resources
       action: argocd:create-resources
