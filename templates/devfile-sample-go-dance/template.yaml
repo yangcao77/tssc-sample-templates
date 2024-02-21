@@ -2,8 +2,8 @@ apiVersion: scaffolder.backstage.io/v1beta3
 # https://backstage.io/docs/features/software-catalog/descriptor-format#kind-template
 kind: Template
 metadata:
-  name: go-kube
-  title:  testkube Go Runtime - Trusted Application Pipeline
+  name: go-kube2
+  title:  test ns Go Runtime - Trusted Application Pipeline
   description: Go Runtime http based application with advanced continuous integration pipeline covering building, CVE scanning, security scanning, signatures,  attestations, SLSA provenance and SBOM along with Gitops-based continuous deployment 
   tags: ["go", "sscs", "sbom", "acs"]
 spec:
@@ -11,68 +11,10 @@ spec:
   # These parameters are used to generate the input form in the frontend, and are
   # used to gather input data for the execution of the template.
   parameters:
-    - title: Application Information
-      required:
-        - name
-        - owner
-      properties:
-        name:
-          title: Name
-          type: string
-          description: Unique name of the component
-          ui:autofocus: true
-          ui:options:
-            rows: 5
-          ui:field: EntityNamePicker
-          maxLength: 63
-        owner:
-          title: Owner
-          type: string
-          description: Owner of the component
-          default: user:guest
-          ui:field: OwnerPicker
-          ui:options:
-            catalogFilter:
-              kind: [Group, User]
-    - title: Application Repository Information
-      required:
-        - repoUrl
-        - branch
-      properties:
-        repoUrl:
-          title: Repository Location
-          type: string
-          ui:field: RepoUrlPicker
-          ui:options:
-            allowedHosts:
-              - github.com # PE can replace this with on-prem host
-              - gitlab.com # PE can replace this with on-prem host
-        branch:
-          title: Repository Default Branch
-          type: string
-          default: main
     - title: Deployment information
       required:
-        - imageRegistry
-        - imageOrg
-        - imageName
         - namespace
       properties:
-        imageRegistry:
-          title: Image Registry
-          type: string
-          description: The image registry host
-          default: quay.io  # PE can replace this with on-prem registry
-        imageOrg:
-          title: Image Organization
-          type: string
-          description: The organization, user or project that this repo will belong to
-        imageName:
-          title: Image Name
-          type: string
-          ui:autofocus: true
-          ui:options:
-            rows: 5
         namespace:
           title: Deployment Namespace
           type: string
@@ -82,150 +24,9 @@ spec:
   # These steps are executed in the scaffolder backend, using data that we gathered
   # via the parameters above.
   steps:
-    # Each step executes an action, in this case one templates files into the workspace.
-    # Get the sample source code
-    - id: fetch-base
-      name: Fetch Base
-      action: fetch:plain
-      input:
-        url: ./content
-    # Renders all the template variables into the files and directory names and content, and places the result in the workspace.
-    - id: fetch-skeleton
-      name: Fetch Skeleton
-      action: fetch:template
-      input:
-        url: ../../skeleton/source-repo
-        values:
-          name: ${{ parameters.name }}
-          namespace: ${{ parameters.namespace }}
-          description: Secure Supply Chain Example for Go Runtime http based application with advanced continuous integration pipeline covering building, CVE scanning, security scanning, signatures,  attestations, SLSA provenance and SBOM along with Gitops-based continuous deployment 
-          dockerfile: docker/Dockerfile
-          buildContext: .
-          image: '${{ parameters.imageRegistry }}/${{ parameters.imageOrg }}/${{ parameters.imageName }}'
-          tags: '["go", "sscs", "sbom", "acs"]'
-          owner: ${{ parameters.owner }} 
-    # This action creates a new GitHub repository and publishes the files in the workspace directory to the repository.
-    - id: publish-github
-      name: Publish Repository to Github
-      action: publish:github
-      if: ${{ (parameters.repoUrl | parseRepoUrl).host === 'github.com' }}
-      input:
-        allowedHosts: ['github.com'] # PE can replace this with on-prem host
-        description: This is ${{ parameters.name }}
-        repoUrl: ${{ parameters.repoUrl }}
-        defaultBranch: ${{ parameters.branch }}
-        protectDefaultBranch: false
-        repoVisibility: "public"
-    # This action creates a new GitLab repository and publishes the files in the workspace directory to the repository.
-    - id: publish-gitlab
-      name: Publish Repository to GitLab
-      action: publish:gitlab
-      if: ${{ (parameters.repoUrl | parseRepoUrl).host === 'gitlab.com' }}
-      input:
-        allowedHosts: ['gitlab.com'] # PE can replace this with on-prem host
-        description: This is ${{ parameters.name }}
-        repoUrl: ${{ parameters.repoUrl }}
-        defaultBranch: ${{ parameters.branch }}
-        protectDefaultBranch: false
-        repoVisibility: "public"
-    # The final step is to register our new component in the catalog.
-    - id: fetch-gitops-skeleton
-      name: Fetch Gitops Skeleton
-      action: fetch:template
-      input:
-        url: ../../skeleton/gitops-template
-        targetPath: gitops
-        values:
-          name: ${{ parameters.name }}
-          appName: ${{ parameters.name }}-gitops # for now just use the component name, since it's single component app
-          description: This is GitOps manifest for ${{ parameters.name }}
-          namespace: ${{ parameters.namespace }}
-          # example: github.com?owner=<owner>&repo=<srcRepo>, the gitops repo name will be <srcRepo>-gitops
-          repoURL: https://${{ (parameters.repoUrl | parseRepoUrl).host }}/${{ (parameters.repoUrl | parseRepoUrl).owner }}/${{ (parameters.repoUrl | parseRepoUrl).repo }}-gitops
-          srcRepoURL: https://${{ (parameters.repoUrl | parseRepoUrl).host }}/${{ (parameters.repoUrl | parseRepoUrl).owner }}/${{ (parameters.repoUrl | parseRepoUrl).repo }}
-          argoComponent: './components/${{ parameters.name }}/overlays/development'
-          owner: ${{ parameters.owner }} 
-          image: quay.io/redhat-appstudio/dance-bootstrap-app:latest # bootstrap app image as placeholder
-          # actual src image, should be used by tekton PR pipeline to update the image in gitops repo
-          srcImage: '${{ parameters.imageRegistry }}/${{ parameters.imageOrg }}/${{ parameters.imageName }}'
-          port: 8081
-    - action: fs:rename
-      id: renameComponentDir
-      name: Rename Component Directory
-      input:
-        files:
-          - from: gitops/components/http
-            to: gitops/components/${{ parameters.name }}
-            overwrite: true
-    - id: publish-github-gitops
-      name: Publish GitOps Repository to Github
-      action: publish:github
-      if: ${{ (parameters.repoUrl | parseRepoUrl).host === 'github.com' }}
-      input:
-        sourcePath: gitops
-        allowedHosts: ['github.com'] # PE can replace this with on-prem host
-        description: This is GitOps repository for ${{ parameters.name }}
-        repoUrl: ${{ (parameters.repoUrl | parseRepoUrl).host }}?owner=${{ (parameters.repoUrl | parseRepoUrl).owner }}&repo=${{ (parameters.repoUrl | parseRepoUrl).repo }}-gitops
-        defaultBranch: "main"
-        protectDefaultBranch: false
-        repoVisibility: "public"
-    # This action creates a new GitLab repository and publishes the files in the workspace directory to the repository.
-    - id: publish-gitlab-gitops
-      name: Publish GitOps Repository to GitLab
-      action: publish:gitlab
-      if: ${{ (parameters.repoUrl | parseRepoUrl).host === 'gitlab.com' }}
-      input:
-        sourcePath: gitops
-        allowedHosts: ['gitlab.com'] # PE can replace this with on-prem host
-        description: This is GitOps repository for ${{ parameters.name }}
-        repoUrl: ${{ (parameters.repoUrl | parseRepoUrl).host }}?owner=${{ (parameters.repoUrl | parseRepoUrl).owner }}&repo=${{ (parameters.repoUrl | parseRepoUrl).repo }}-gitops
-        defaultBranch: "main"
-        protectDefaultBranch: false
-        repoVisibility: "public"
-    - id: wait-for-github-repository
-      name: Waiting for repository availability
-      action: 'debug:wait'
-      input:
-        seconds: 3
-    - id: register
-      name: Register
-      action: catalog:register
-      input:
-        repoContentsUrl: ${{ steps['publish-github'].output.repoContentsUrl if steps['publish-github'].output else steps['publish-gitlab'].output.repoContentsUrl }}
-        catalogInfoPath: '/catalog-info.yaml'
-    - id: register-gitops
-      name: Register Gitops
-      action: catalog:register
-      input:
-        repoContentsUrl: ${{ steps['publish-github-gitops'].output.repoContentsUrl if steps['publish-github-gitops'].output else steps['publish-gitlab-gitops'].output.repoContentsUrl }}
-        catalogInfoPath: '/catalog-info.yaml'
     - id: create-namespace
       name: Create Application Namespace
       action: kubernetes:create-namespace
       input:
         namespace: ${{ parameters.namespace }}
-        url: https://kubernetes.default.svc
         labels: 'argocd.argoproj.io/managed-by=openshift-gitops;'
-    - id: create-argocd-resources
-      name: Create ArgoCD Resources
-      action: argocd:create-resources
-      input:
-        appName: ${{ parameters.name }}
-        # name set in rhdh config
-        argoInstance: default
-        namespace: ${{ parameters.namespace}}
-        repoUrl: https://${{ (parameters.repoUrl | parseRepoUrl).host }}/${{ (parameters.repoUrl | parseRepoUrl).owner }}/${{ (parameters.repoUrl | parseRepoUrl).repo }}-gitops.git
-        path: './components/${{ parameters.name }}/overlays/development'
-  # Outputs are displayed to the user after a successful execution of the template.
-  output:
-    links:
-      - title: Source Repository
-        url: ${{ steps['publish-github'].output.remoteUrl if steps['publish-github'].output else steps['publish-gitlab'].output.remoteUrl }}
-      - title: GitOps Repository
-        url: ${{ steps['publish-github-gitops'].output.remoteUrl if steps['publish-github-gitops'].output else steps['publish-gitlab-gitops'].output.remoteUrl }}
-      - title: Open Component in catalog
-        icon: catalog
-        entityRef: ${{ steps['register'].output.entityRef }}
-      - title: Open GitOps Resource in catalog
-        icon: catalog
-        entityRef: ${{ steps['register-gitops'].output.entityRef }}
