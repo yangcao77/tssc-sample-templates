@@ -13,7 +13,7 @@ spec:
     - title: Deployment information
       required:
         - namespace
-        - cluster-url
+        - url
         - token
       properties:
         namespace:
@@ -22,18 +22,12 @@ spec:
           ui:autofocus: true
           ui:options:
             rows: 5
-        cluster-url:
+        url:
           title: API URL of the Kubernetes Cluster
           type: string
-          ui:autofocus: true
-          ui:options:
-            rows: 5
         token:
           title: Kubernetes API bearer token used for authentication
           type: string
-          ui:autofocus: true
-          ui:options:
-            rows: 5
   # These steps are executed in the scaffolder backend, using data that we gathered
   # via the parameters above.
   steps:
@@ -43,5 +37,5 @@ spec:
       input:
         namespace: ${{ parameters.namespace }}
         labels: 'argocd.argoproj.io/managed-by=openshift-gitops;'
-        token:  ${{ parameters.token }}
-        url: ${{ parameters.cluster-url }}
+        token: ${{ parameters.token }}
+        url: ${{ parameters.url }}
