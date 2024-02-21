@@ -205,7 +205,7 @@ spec:
       input:
         namespace: ${{ parameters.namespace }}
         url: https://kubernetes.default.svc
-        labels: 'argocd.argoproj.io/managed-by: openshift-gitops'
+        labels: 'argocd.argoproj.io/managed-by=openshift-gitops;'
     - id: create-argocd-resources
       name: Create ArgoCD Resources
       action: argocd:create-resources
