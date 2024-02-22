@@ -45,13 +45,12 @@ spec:
           ui:field: RepoUrlPicker
           ui:options:
             allowedHosts:
-              - github.com
-              - gitlab.com
+              - github.com # PE can replace this with on-prem host
+              - gitlab.com # PE can replace this with on-prem host
         branch:
           title: Repository Default Branch
           type: string
           default: main
-
     - title: Deployment information
       required:
         - imageRegistry
@@ -60,17 +59,10 @@ spec:
         - namespace
       properties:
         imageRegistry:
-          title: Select a image registry
+          title: Image Registry
           type: string
-          default: quay.io
-          enum:
-            - quay.io
-            - image-registry.openshift-image-registry.svc:5000
-            - docker.io
-          enumNames:
-            - Quay
-            - Internal OpenShift Registry
-            - Docker
+          description: The image registry host
+          default: quay.io  # PE can replace this with on-prem registry
         imageOrg:
           title: Image Organization
           type: string
@@ -118,7 +110,7 @@ spec:
       action: publish:github
       if: ${{ (parameters.repoUrl | parseRepoUrl).host === 'github.com' }}
       input:
-        allowedHosts: ['github.com']
+        allowedHosts: ['github.com'] # PE can replace this with on-prem host
         description: This is ${{ parameters.name }}
         repoUrl: ${{ parameters.repoUrl }}
         defaultBranch: ${{ parameters.branch }}
@@ -130,19 +122,13 @@ spec:
       action: publish:gitlab
       if: ${{ (parameters.repoUrl | parseRepoUrl).host === 'gitlab.com' }}
       input:
-        allowedHosts: ['gitlab.com']
+        allowedHosts: ['gitlab.com'] # PE can replace this with on-prem host
         description: This is ${{ parameters.name }}
         repoUrl: ${{ parameters.repoUrl }}
         defaultBranch: ${{ parameters.branch }}
         protectDefaultBranch: false
         repoVisibility: "public"
     # The final step is to register our new component in the catalog.
-    - id: register
-      name: Register
-      action: catalog:register
-      input:
-        repoContentsUrl: ${{ steps['publish-github'].output.repoContentsUrl if steps['publish-github'].output else steps['publish-gitlab'].output.repoContentsUrl }}
-        catalogInfoPath: '/catalog-info.yaml'
     - id: fetch-gitops-skeleton
       name: Fetch Gitops Skeleton
       action: fetch:template
@@ -159,7 +145,9 @@ spec:
           srcRepoURL: https://${{ (parameters.repoUrl | parseRepoUrl).host }}/${{ (parameters.repoUrl | parseRepoUrl).owner }}/${{ (parameters.repoUrl | parseRepoUrl).repo }}
           #argoComponent: './components/${{ parameters.name }}/overlays/development'
           owner: ${{ parameters.owner }} 
-          image: '${{ parameters.imageRegistry }}/${{ parameters.imageOrg }}/${{ parameters.imageName }}'
+          image: quay.io/redhat-appstudio/dance-bootstrap-app:latest # bootstrap app image as placeholder
+          # actual src image, should be used by tekton PR pipeline to update the image in gitops repo
+          srcImage: '${{ parameters.imageRegistry }}/${{ parameters.imageOrg }}/${{ parameters.imageName }}'
           port: 8081
     - action: fs:rename
       id: renameComponentDir
@@ -178,7 +166,7 @@ spec:
       if: ${{ (parameters.repoUrl | parseRepoUrl).host === 'github.com' }}
       input:
         sourcePath: gitops
-        allowedHosts: ['github.com']
+        allowedHosts: ['github.com'] # PE can replace this with on-prem host
         description: This is GitOps repository for ${{ parameters.name }}
         repoUrl: ${{ (parameters.repoUrl | parseRepoUrl).host }}?owner=${{ (parameters.repoUrl | parseRepoUrl).owner }}&repo=${{ (parameters.repoUrl | parseRepoUrl).repo }}-gitops
         defaultBranch: "main"
@@ -191,18 +179,39 @@ spec:
       if: ${{ (parameters.repoUrl | parseRepoUrl).host === 'gitlab.com' }}
       input:
         sourcePath: gitops
-        allowedHosts: ['gitlab.com']
+        allowedHosts: ['gitlab.com'] # PE can replace this with on-prem host
         description: This is GitOps repository for ${{ parameters.name }}
         repoUrl: ${{ (parameters.repoUrl | parseRepoUrl).host }}?owner=${{ (parameters.repoUrl | parseRepoUrl).owner }}&repo=${{ (parameters.repoUrl | parseRepoUrl).repo }}-gitops
         defaultBranch: "main"
         protectDefaultBranch: false
         repoVisibility: "public"
+    - id: wait-for-github-repository
+      name: Waiting for repository availability
+      action: 'debug:wait'
+      input:
+        seconds: 3
+    - id: register
+      name: Register
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps['publish-github'].output.repoContentsUrl if steps['publish-github'].output else steps['publish-gitlab'].output.repoContentsUrl }}
+        catalogInfoPath: '/catalog-info.yaml'
     - id: register-gitops
       name: Register Gitops
       action: catalog:register
       input:
         repoContentsUrl: ${{ steps['publish-github-gitops'].output.repoContentsUrl if steps['publish-github-gitops'].output else steps['publish-gitlab-gitops'].output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
+    - id: create-argocd-resources
+      name: Create ArgoCD Resources
+      action: argocd:create-resources
+      input:
+        appName: ${{ parameters.name }}
+        # name set in rhdh config
+        argoInstance: default
+        namespace: ${{ parameters.namespace}}
+        repoUrl: https://${{ (parameters.repoUrl | parseRepoUrl).host }}/${{ (parameters.repoUrl | parseRepoUrl).owner }}/${{ (parameters.repoUrl | parseRepoUrl).repo }}-gitops.git
+        path: './components/${{ parameters.name }}/overlays/development'
   # Outputs are displayed to the user after a successful execution of the template.
   output:
     links:
