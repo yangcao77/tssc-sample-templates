@@ -7,11 +7,11 @@ metadata:
 spec:
   project: default
   source:
-    path: ./
+    path: ./applications/${{ values.appName }}
     repoURL: ${{ values.repoURL }}
     targetRevision: main
   destination:
-    namespace: ${{ values.namespace }}
+    namespace: openshift-gitops
     server: https://kubernetes.default.svc
   syncPolicy:
     managedNamespaceMetadata:
