@@ -15,6 +15,7 @@ spec:
         - namespace
         - url
         - token
+        - clusterRef
       properties:
         namespace:
           title: Deployment Namespace
@@ -28,6 +29,14 @@ spec:
         token:
           title: Kubernetes API bearer token used for authentication
           type: string
+        clusterRef:
+          title: Cluster reference
+          type: string
+          description: Cluster resource entity reference from the catalog
+          ui:field: EntityPicker
+          ui:options:
+            catalogFilter:
+              kind: Resource
   # These steps are executed in the scaffolder backend, using data that we gathered
   # via the parameters above.
   steps:
@@ -36,6 +45,7 @@ spec:
       action: kubernetes:create-namespace
       input:
         namespace: ${{ parameters.namespace }}
-        labels: 'argocd.argoproj.io/managed-by=openshift-gitops;'
         token: ${{ parameters.token }}
-        url: '${{ parameters.url }}'
+        clusterRef: ${{ parameters.clusterRef }}
+        url: ${{ parameters.url }}
+        labels: 'argocd.argoproj.io/managed-by=openshift-gitops;'
