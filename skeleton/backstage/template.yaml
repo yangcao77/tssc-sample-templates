@@ -188,6 +188,8 @@ spec:
           # actual src image, should be used by tekton PR pipeline to update the image in gitops repo
           srcImage: '${{ parameters.imageRegistry }}/${{ parameters.imageOrg }}/${{ parameters.imageName }}'
           port: sed.edit.IMAGEPORT
+          argoNS: ${ARGOCD__DEFAULT__NAMESPACE}
+          argoInstance: ${ARGOCD__DEFAULT__INSTANCE}
     - action: fs:rename
       id: renameComponentDir
       name: Rename Component Directory
