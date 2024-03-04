@@ -5,7 +5,7 @@ metadata:
   namespace:  ${{ values.argoNS }}
   finalizers: ["resources-finalizer.argocd.argoproj.io"] 
 spec:
-  project: ${{ values.argoInstance }}
+  project: ${{ values.argoProject }}
   source:
     path: ${{ values.argoComponentOverlays }}/prod
     repoURL: ${{ values.repoURL }}

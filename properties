@@ -4,4 +4,5 @@ export GITLAB__DEFAULT__HOST=gitlab.com
 export QUAY__DEFAULT__HOST=quay.io
 
 export ARGOCD__DEFAULT__NAMESPACE=janus-argocd
-export ARGOCD__DEFAULT__INSTANCE=janus
+export ARGOCD__DEFAULT__INSTANCE=main
+export ARGOCD__DEFAULT__PROJECT=janus
