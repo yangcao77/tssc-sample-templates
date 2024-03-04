@@ -189,7 +189,7 @@ spec:
           srcImage: '${{ parameters.imageRegistry }}/${{ parameters.imageOrg }}/${{ parameters.imageName }}'
           port: 3001
           argoNS: janus-argocd
-          argoInstance: main
+          argoInstance: janus
     - action: fs:rename
       id: renameComponentDir
       name: Rename Component Directory
@@ -246,7 +246,7 @@ spec:
       input:
         appName: ${{ parameters.name }}-app-of-apps
         # name set in rhdh config
-        argoInstance: main
+        argoInstance: janus
         namespace: janus-argocd
         repoUrl: https://${{ parameters.githubServer if parameters.hostType === 'GitHub' else parameters.gitlabServer }}/${{ parameters.repoOwner }}/${{ parameters.repoName }}-gitops.git
         path: './app-of-apps'
