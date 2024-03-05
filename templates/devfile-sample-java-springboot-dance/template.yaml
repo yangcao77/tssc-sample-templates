@@ -189,7 +189,6 @@ spec:
           srcImage: '${{ parameters.imageRegistry }}/${{ parameters.imageOrg }}/${{ parameters.imageName }}'
           port: 8081
           argoNS: janus-argocd
-          argoInstance: main
           argoProject: janus
     - action: fs:rename
       id: renameComponentDir
@@ -249,7 +248,7 @@ spec:
         # name set in rhdh config
         argoInstance: main
         namespace: janus-argocd
-        repoUrl: https://${{ parameters.githubServer if parameters.hostType === 'GitHub' else parameters.gitlabServer }}/${{ parameters.repoOwner }}/${{ parameters.repoName }}-gitops.git
+        repoUrl: https://${{ parameters.githubServer if parameters.hostType === 'GitHub' else parameters.gitlabServer }}/${{ parameters.repoOwner }}/${{ parameters.repoName }}-gitops
         path: './app-of-apps'
   # Outputs are displayed to the user after a successful execution of the template.
   output:
