@@ -1,7 +1,7 @@
 # PE can replace these values with on-prem host
 export GITHUB__DEFAULT__HOST=github.com
-export GITLAB__DEFAULT__HOST=gitlab.com
-export QUAY__DEFAULT__HOST=quay.io
+export GITLAB__DEFAULT__HOST=gitlab-gitlab.apps.cluster-f2l6r.sandbox1505.opentlc.com
+export QUAY__DEFAULT__HOST=quay-f2l6r.apps.cluster-f2l6r.sandbox1505.opentlc.com
 
 export ARGOCD__DEFAULT__NAMESPACE=janus-argocd
 export ARGOCD__DEFAULT__INSTANCE=main
