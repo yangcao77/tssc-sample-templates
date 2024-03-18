@@ -14,13 +14,13 @@ spec:
     namespace: ${{ values.namespace }}-stage
     server: https://kubernetes.default.svc
   syncPolicy:
-    managedNamespaceMetadata:
-      labels: 
-        argocd.argoproj.io/managed-by: ${{ values.argoNS }}
+    # managedNamespaceMetadata:
+    #   labels: 
+    #     argocd.argoproj.io/managed-by: ${{ values.argoNS }}
     automated: 
       prune: true
       selfHeal: true
     syncOptions:
-      - CreateNamespace=true
+      # - CreateNamespace=true
       - PruneLast=true
 
