@@ -13,6 +13,15 @@ spec:
   destination:
     namespace: ${{ values.namespace }}-development
     server: https://kubernetes.default.svc
+  ignoreDifferences:
+  - group: pipelinesascode.tekton.dev
+    kind: Repository
+    name: secret
+    namespace: rhtap-app-development
+    jsonPointers:
+    - /spec/params
+    - /spec/secret
+    - /spec/webhook_secret
   syncPolicy:
     # managedNamespaceMetadata:
     #   labels: 

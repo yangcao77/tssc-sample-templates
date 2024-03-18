@@ -12,3 +12,12 @@ spec:
       name: "rhtap-pipeline-secret"
       # Set this if you have a different key in your secret
       key: "webhook-github-secret"
+  # params:
+  #   - name: secret
+  #     secretRef:
+  #       name: "gitops-auth-secret"
+  #       key: "password"
+  #   - name: webhook_secret
+  #     secretRef:
+  #       name: "rhtap-pipeline-secret"
+  #       key: "webhook-github-secret"
