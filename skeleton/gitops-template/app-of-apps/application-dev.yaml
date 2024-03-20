@@ -14,21 +14,27 @@ spec:
     namespace: ${{ values.namespace }}-development
     server: https://kubernetes.default.svc
   ignoreDifferences:
-  - group: pipelinesascode.tekton.dev
-    kind: Repository
-    name: secret
-    namespace: rhtap-app-development
+  - kind: Repository
     jsonPointers:
-    - /spec/params
-    - /spec/secret
-    - /spec/webhook_secret
+      - /spec
+      - /spec/params
+      - /spec/secret
+      - /spec/webhook_secret
+    jqPathExpressions:
+      - .spec.secret
+      - .spec.secret.key
+      - .spec.secret.value
+      - .spec.webhook_secret
+      - .spec.webhook_secret.key
+      - .spec.webhook_secret.value
   syncPolicy:
-    # managedNamespaceMetadata:
-    #   labels: 
-    #     argocd.argoproj.io/managed-by: ${{ values.argoNS }}
+    managedNamespaceMetadata:
+      labels: 
+        argocd.argoproj.io/managed-by: ${{ values.argoNS }}
     automated: 
       prune: true
       selfHeal: true
     syncOptions:
-      # - CreateNamespace=true
+      - CreateNamespace=true
+      - RespectIgnoreDifferences=true
       - PruneLast=true
