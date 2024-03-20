@@ -13,20 +13,20 @@ spec:
   destination:
     namespace: ${{ values.namespace }}-development
     server: https://kubernetes.default.svc
-  ignoreDifferences:
-  - kind: Repository
-    jsonPointers:
-      - /spec
-      - /spec/params
-      - /spec/secret
-      - /spec/webhook_secret
-    jqPathExpressions:
-      - .spec.secret
-      - .spec.secret.key
-      - .spec.secret.value
-      - .spec.webhook_secret
-      - .spec.webhook_secret.key
-      - .spec.webhook_secret.value
+  # ignoreDifferences:
+  # - kind: Repository
+  #   jsonPointers:
+  #     - /spec
+  #     - /spec/params
+  #     - /spec/secret
+  #     - /spec/webhook_secret
+  #   jqPathExpressions:
+  #     - .spec.secret
+  #     - .spec.secret.key
+  #     - .spec.secret.value
+  #     - .spec.webhook_secret
+  #     - .spec.webhook_secret.key
+  #     - .spec.webhook_secret.value
   syncPolicy:
     managedNamespaceMetadata:
       labels: 
@@ -36,5 +36,5 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - RespectIgnoreDifferences=true
+      # - RespectIgnoreDifferences=true
       - PruneLast=true
