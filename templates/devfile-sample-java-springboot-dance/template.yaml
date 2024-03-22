@@ -193,10 +193,10 @@ spec:
           argoNS: rhtap
           argoProject: default
           secretRef: ${{ parameters.hostType === 'GitLab' }}
-          gitSecret: gitops-auth-secret
-          gitSecretKey: password
-          webhookSecret: rhtap-pipelines-secret
-          webhookSecretKey: webhook-github-secret
+          gitSecret: gitlab-auth-secret
+          gitSecretKey: gitlab.token
+          webhookSecret: pipelines-secret
+          webhookSecretKey: webhook-secret
     - action: fs:rename
       id: renameComponentDir
       name: Rename Component Directory
