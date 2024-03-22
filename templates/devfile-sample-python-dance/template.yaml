@@ -194,9 +194,9 @@ spec:
           argoProject: default
           secretRef: ${{ parameters.hostType === 'GitLab' }}
           gitSecret: gitlab-auth-secret
-          gitSecretKey: password
+          gitSecretKey: gitlab.token
           webhookSecret: pipelines-secret
-          webhookSecretKey: webhook-secret
+          webhookSecretKey: webhook.secret
     - action: fs:rename
       id: renameComponentDir
       name: Rename Component Directory

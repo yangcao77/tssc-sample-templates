@@ -12,6 +12,6 @@ export ARGOCD__DEFAULT__PROJECT=default
 
 # For secret reference in Repositroy CRs
 export GIT__SECRET__DEFAULT__NAME=gitlab-auth-secret
-export GIT__SECRET__DEFAULT__KEY=password
+export GIT__SECRET__DEFAULT__KEY=gitlab.token
 export WEBHOOK__SECRET__DEFAULT__NAME=pipelines-secret
-export WEBHOOK__SECRET__DEFAULT__KEY=webhook-secret
+export WEBHOOK__SECRET__DEFAULT__KEY=webhook.secret
