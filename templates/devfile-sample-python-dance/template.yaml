@@ -2,8 +2,8 @@ apiVersion: scaffolder.backstage.io/v1beta3
 # https://backstage.io/docs/features/software-catalog/descriptor-format#kind-template
 kind: Template
 metadata:
-  name: python
-  title:  Python - Trusted Application Pipeline
+  name: python-test
+  title: Test Python - Trusted Application Pipeline
   description: Python is an interpreted,  object-oriented, high-level programming language with dynamic semantics. This sample demonstrates software supply chain security functionalty using an advanced continuous integration pipeline covering building, CVE scanning, security scanning, signatures, attestations, SLSA provenance and SBOM along with Gitops-based continuous deployment. 
   tags: ["python", "pip", "flask", "sscs", "sbom", "acs"]
 spec:
@@ -143,7 +143,8 @@ spec:
           buildContext: .
           image: '${{ parameters.imageRegistry }}/${{ parameters.imageOrg }}/${{ parameters.imageName }}'
           tags: '["python", "pip", "flask", "sscs", "sbom", "acs"]'
-          owner: ${{ parameters.owner }} 
+          owner: ${{ parameters.owner }}
+          gitops-auth-secret-name: ${{ gitops-auth-secret if parameters.hostType === 'GitHub' else gitlab-auth-secret }}
     # This action creates a new GitHub repository and publishes the files in the workspace directory to the repository.
     - id: publish-github
       name: Publish Repository to GitHub
