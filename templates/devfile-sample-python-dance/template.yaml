@@ -144,7 +144,7 @@ spec:
           image: '${{ parameters.imageRegistry }}/${{ parameters.imageOrg }}/${{ parameters.imageName }}'
           tags: '["python", "pip", "flask", "sscs", "sbom", "acs"]'
           owner: ${{ parameters.owner }}
-          gitops-auth-secret-name: ${{ gitops-auth-secret if parameters.hostType === 'GitHub' else gitlab-auth-secret }}
+          gitops-auth-secret-name: ${{ 'gitops-auth-secret' if parameters.hostType === 'GitHub' else 'gitlab-auth-secret' }}
     # This action creates a new GitHub repository and publishes the files in the workspace directory to the repository.
     - id: publish-github
       name: Publish Repository to GitHub
