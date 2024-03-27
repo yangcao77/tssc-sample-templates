@@ -2,8 +2,8 @@ apiVersion: scaffolder.backstage.io/v1beta3
 # https://backstage.io/docs/features/software-catalog/descriptor-format#kind-template
 kind: Template
 metadata:
-  name: go
-  title:  Go Runtime - Trusted Application Pipeline
+  name: go-test
+  title:  TEST Go Runtime - Trusted Application Pipeline
   description: Go Runtime http based application with advanced continuous integration pipeline covering building, CVE scanning, security scanning, signatures,  attestations, SLSA provenance and SBOM along with Gitops-based continuous deployment 
   tags: ["go", "sscs", "sbom", "acs"]
 spec:
@@ -143,7 +143,8 @@ spec:
           buildContext: .
           image: '${{ parameters.imageRegistry }}/${{ parameters.imageOrg }}/${{ parameters.imageName }}'
           tags: '["go", "sscs", "sbom", "acs"]'
-          owner: ${{ parameters.owner }} 
+          owner: ${{ parameters.owner }}
+          gitopsAuthSecret: ${{ 'gitops-auth-secret' if parameters.hostType === 'GitHub' else 'gitlab-auth-secret' }}
     # This action creates a new GitHub repository and publishes the files in the workspace directory to the repository.
     - id: publish-github
       name: Publish Repository to GitHub
